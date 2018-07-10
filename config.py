@@ -15,7 +15,6 @@ class DokRegAppConfig(object):
 
     SQLALCHEMY_DATABASE_URI = "postgresql://dokreg:dokreg@localhost:5432/dokreg"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    print(SQLALCHEMY_DATABASE_URI)
 
 
 ALLOWED_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif", "zip", "rar"}

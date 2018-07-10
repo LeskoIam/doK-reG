@@ -14,13 +14,14 @@ from flask_login import (current_user,
                          logout_user,
                          login_required)
 
-from werkzeug.utils import secure_filename
-from config import ALLOWED_EXTENSIONS
 from app.models import (User,
                         Document,
                         Project)
+
 from app import (app,
                  db)
+
+from werkzeug.utils import secure_filename
 import os
 
 
