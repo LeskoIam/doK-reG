@@ -6,7 +6,8 @@ from flask import (render_template,
 
 from app.forms import (RegistrationForm,
                        LoginForm,
-                       UploadForm)
+                       UploadForm,
+                       AddProjectForm)
 
 from flask_login import (current_user,
                          login_user,
@@ -15,8 +16,11 @@ from flask_login import (current_user,
 
 from werkzeug.utils import secure_filename
 from config import ALLOWED_EXTENSIONS
-from app.models import User, Document
-from app import app, db
+from app.models import (User,
+                        Document,
+                        Project)
+from app import (app,
+                 db)
 import os
 
 
@@ -59,6 +63,19 @@ def upload_file():
             return redirect(url_for("upload_file"))
     return render_template("upload.html", form=upload_form)
 
+
+@app.route("/add_project", methods=["GET", "POST"])
+@login_required
+def add_project():
+    add_project_form = AddProjectForm()
+    if request.method == "POST":
+        if add_project_form.validate_on_submit():
+            name = add_project_form.name.data
+            project = Project(name=name, owner_id=current_user.get_id())
+            db.session.add(project)
+            db.session.commit()
+            return redirect(url_for("add_project"))
+    return render_template("add_project.html", form=add_project_form)
 
 # @app.route("/download")
 # # @login_required

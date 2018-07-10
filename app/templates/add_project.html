@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="alert alert-primary" role="alert">
+        <h2>Create project</h2>
+        <form action="" method="post" novalidate enctype=multipart/form-data>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.name.label }}
+                {{ form.name() }}
+                {% for error in form.name.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </div>
+
+{% endblock %}
