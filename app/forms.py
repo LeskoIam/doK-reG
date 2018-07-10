@@ -55,11 +55,9 @@ def project_choices():
         projects_choices.append((project.id, project.name))
     return projects_choices
 
-pairs = project_choices()
-
 
 class UploadForm(FlaskForm):
-    project = SelectField("Project", choices=pairs, validators=None, coerce=int)
+    project = SelectField("Project", choices=project_choices(), coerce=int)
     title = StringField("Document title", validators=[DataRequired()])
     revision = StringField("Revision", validators=[DataRequired()], default=1)
     file = FileField("File", validators=[FileRequired(),
