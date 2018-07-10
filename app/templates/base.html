@@ -17,12 +17,15 @@
         <li class="nav-item">
             <a class="nav-link active" href="{{ url_for('index') }}">Home</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('upload_file') }}">Create doKument</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('add_project') }}">Create project</a>
-        </li>
+        {% if current_user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('upload_file') }}">Create doKument</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('add_project') }}">Create project</a>
+            </li>
+        {% endif %}
         <li class="nav-item">
             {% if current_user.is_authenticated %}
                 <a class="nav-link" href="{{ url_for('logout') }}">Logout - {{ current_user.username }}</a>
@@ -30,9 +33,11 @@
                 <a class="nav-link" href="{{ url_for('login') }}">Login</a>
             {% endif %}
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('register_user') }}">Register</a>
-        </li>
+        {% if not current_user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('register_user') }}">Register</a>
+            </li>
+        {% endif %}
         <!--
         <li class="nav-item">
             <a class="nav-link active" href="#">Active</a>
