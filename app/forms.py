@@ -3,17 +3,21 @@ from wtforms import (StringField,
                      PasswordField,
                      BooleanField,
                      SubmitField,
-                     FileField,
-                     SelectField)
+                     FileField)
+
 from wtforms.validators import (ValidationError,
                                 DataRequired,
                                 Email,
                                 EqualTo)
+
 from flask_wtf.file import (FileRequired,
                             FileAllowed)
 
 from app.models import (User,
                         Project)
+
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
+
 from config import ALLOWED_EXTENSIONS
 
 __author__ = 'mpolensek'
@@ -48,16 +52,12 @@ class RegistrationForm(FlaskForm):
             raise ValidationError("Please use a different email address.")
 
 
-def project_choices():
-    projects = Project.query.all()
-    projects_choices = []
-    for project in projects:
-        projects_choices.append((project.id, project.name))
-    return projects_choices
+def supported_projects():
+    return Project.query.filter_by(archived=False)
 
 
 class UploadForm(FlaskForm):
-    project = SelectField("Project", choices=project_choices(), coerce=int)
+    project = QuerySelectField("Project", query_factory=supported_projects, get_label="name")
     title = StringField("Document title", validators=[DataRequired()])
     revision = StringField("Revision", validators=[DataRequired()], default=1)
     file = FileField("File", validators=[FileRequired(),

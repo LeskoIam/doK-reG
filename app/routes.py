@@ -55,7 +55,7 @@ def upload_file():
                            file_name=filename,
                            file_path=app.config["UPLOAD_FOLDER"],
                            revision=upload_form.revision.data,
-                           project_id=upload_form.project.data,
+                           project_id=upload_form.project.data.id,
                            owner_id=current_user.get_id())
             db.session.add(doc)
             db.session.commit()
