@@ -2,8 +2,17 @@
 
 {% block content %}
 
-    <div class="alert alert-primary" role="alert">
-        Welcome to doK-reG!
-    </div>
+    <h2>doKument stream</h2>
+    {% if current_user.is_authenticated %}
+        {% for doc in documents %}
+            <div class="alert alert-primary" role="alert">
+                {{ doc.id }}-{{ doc.title }}-{{ doc.file_name }}-{{ doc.file_path }}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-primary" role="alert">
+            Available to registered users
+        </div>
+    {% endif %}
 
 {% endblock %}

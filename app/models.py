@@ -72,7 +72,7 @@ class Document(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
 
-
+# Create database tables
 go = 2
 if go == 1:
     db.create_all()

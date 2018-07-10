@@ -31,15 +31,11 @@ __author__ = 'mpolensek'
 # When it lies to you, it may be a while before you realize something's wrong.
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
 @app.route("/")
 @app.route("/index", methods=["GET"])
 def index():
-    return render_template("index.html")
+    documents = Document.query.filter_by(owner_id=current_user.get_id()).order_by(Document.updated_on.desc()).all()
+    return render_template("index.html", documents=documents)
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -60,7 +56,7 @@ def upload_file():
             db.session.add(doc)
             db.session.commit()
             file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-            return redirect(url_for("upload_file"))
+            return redirect(url_for("index"))
     return render_template("upload.html", form=upload_form)
 
 
