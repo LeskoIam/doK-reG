@@ -41,7 +41,9 @@ def index():
 
 @app.route("/document/<int:document_id>")
 def document_details(document_id):
-    document = Document.query.filter_by(id=document_id).first()
+    document = Document.query.filter_by(id=document_id).join(Project).first()
+    print(dir(document.project))
+    print(document.project.name)
     return render_template("document_details.html", document=document)
 
 

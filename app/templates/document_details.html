@@ -2,9 +2,36 @@
 
 {% block content %}
 
-    <p>{{ document.id }}</p>
-    <p>{{ document.title }}</p>
-    <p>{{ document.file_name }}</p>
-    <p>{{ document.file_path }}</p>
-    <p>{{ document.created_on }}</p>
+    <h2>{{ document.title }}</h2>
+
+    <div>
+        <div class="row">
+            <div class="col-4">
+                <div class="alert alert-primary" role="alert">
+                    <b>Project:</b> {{ document.project.name }}
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="alert alert-primary" role="alert">
+                    <b>Last updated:</b> {{ document.updated_on }}
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="alert alert-primary" role="alert">
+                    <b>Created:</b> {{ document.created_on }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <div class="alert alert-primary" role="alert">
+                    <b>File name:</b> {{ document.file_name }}
+                </div>
+            </div>
+            <div class="col-8">
+                &nbsp;
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

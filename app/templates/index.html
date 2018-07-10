@@ -4,11 +4,48 @@
 
     <h2>doKument stream</h2>
     {% if current_user.is_authenticated %}
+        <div class="alert alert-info" role="alert">
+            <div class="row">
+                <div class="col-2">
+                    <b>#</b>
+                </div>
+                <div class="col-2">
+                    <b>Title</b>
+                </div>
+                <div class="col-3">
+                    <b>File name</b>
+                </div>
+                <div class="col-3">
+                    <b>Project</b>
+                </div>
+                <div class="col-2">
+                    &nbsp;
+                </div>
+            </div>
+        </div>
+
         {% for doc in documents %}
             <div class="alert alert-primary" role="alert">
-                {{ doc.id }}-{{ doc.title }}-{{ doc.file_name }}-{{ doc.file_path }}-<a href="/document/{{ doc.id }}">details</a>
+                <div class="row">
+                    <div class="col-2">
+                        {{ doc.id }}
+                    </div>
+                    <div class="col-2">
+                        {{ doc.title }}
+                    </div>
+                    <div class="col-3">
+                        {{ doc.file_name }}
+                    </div>
+                    <div class="col-3">
+                        {{ doc.project.name }}
+                    </div>
+                    <div class="col-2">
+                        <a href="/document/{{ doc.id }}">details</a>
+                    </div>
+                </div>
             </div>
         {% endfor %}
+
     {% else %}
         <div class="alert alert-primary" role="alert">
             Available to registered users
