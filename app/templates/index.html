@@ -6,7 +6,7 @@
     {% if current_user.is_authenticated %}
         {% for doc in documents %}
             <div class="alert alert-primary" role="alert">
-                {{ doc.id }}-{{ doc.title }}-{{ doc.file_name }}-{{ doc.file_path }}
+                {{ doc.id }}-{{ doc.title }}-{{ doc.file_name }}-{{ doc.file_path }}-<a href="/document/{{ doc.id }}">details</a>
             </div>
         {% endfor %}
     {% else %}

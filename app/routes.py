@@ -39,6 +39,12 @@ def index():
     return render_template("index.html", documents=documents)
 
 
+@app.route("/document/<int:document_id>")
+def document_details(document_id):
+    document = Document.query.filter_by(id=document_id).first()
+    return render_template("document_details.html", document=document)
+
+
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload_file():
