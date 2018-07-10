@@ -5,7 +5,8 @@ from flask import (render_template,
                    url_for)
 
 from app.forms import (RegistrationForm,
-                       LoginForm)
+                       LoginForm,
+                       UploadForm)
 
 from flask_login import (current_user,
                          login_user,
@@ -40,28 +41,23 @@ def index():
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload_file():
+    upload_form = UploadForm()
     if request.method == "POST":
-        # print(secure_filename(request.files["file"]))
-        # check if the post request has the file part
-        if "file" not in request.files:
-            flash("No file selected [E100]")
-            return redirect(request.url)
-        file = request.files["file"]
-        # if user does not select file, browser also
-        # submit an empty part without filename
-        if file.filename == "":
-            flash("No file selected [E101]")
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
+        # check if upload form is valid
+        if upload_form.validate_on_submit():
+            file = upload_form.file.data
             filename = secure_filename(file.filename)
-            doc = Document(name=filename, owner_id=current_user.get_id(), project_id=1)
+            doc = Document(title=upload_form.title.data,
+                           file_name=filename,
+                           file_path=app.config["UPLOAD_FOLDER"],
+                           revision=upload_form.revision.data,
+                           project_id=1,
+                           owner_id=current_user.get_id())
             db.session.add(doc)
             db.session.commit()
             file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
             return redirect(url_for("upload_file"))
-        else:
-            flash("File type not supported")
-    return render_template("upload.html")
+    return render_template("upload.html", form=upload_form)
 
 
 # @app.route("/download")

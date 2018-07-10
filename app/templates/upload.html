@@ -3,9 +3,34 @@
 {% block content %}
 
     <div class="alert alert-primary" role="alert">
-        <form method=post enctype=multipart/form-data>
-            <input type=file name=file>
-            <input type=submit value=Upload>
+        <form action="" method="post" novalidate enctype=multipart/form-data>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.title.label }}
+                {{ form.title(size=64) }}
+                {% for error in form.title.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+
+            <p>
+                {{ form.revision.label }}
+                {{ form.revision(size=3, readonly=true) }}
+                {% for error in form.revision.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+
+            <p>
+                {{ form.file() }}
+                {% for error in form.file.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+
+            <p>{{ form.submit() }}</p>
+{#            <input type=file name=file>#}
+{#            <input type=submit value=Upload>#}
         </form>
     </div>
 
