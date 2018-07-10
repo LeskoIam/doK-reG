@@ -9,7 +9,8 @@ from app.forms import (RegistrationForm,
 
 from flask_login import (current_user,
                          login_user,
-                         logout_user)
+                         logout_user,
+                         login_required)
 
 from werkzeug.utils import secure_filename
 from config import ALLOWED_EXTENSIONS
@@ -37,7 +38,7 @@ def index():
 
 
 @app.route('/upload', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def upload_file():
     if request.method == "POST":
         # print(secure_filename(request.files["file"]))
@@ -86,7 +87,7 @@ def login():
 
 
 @app.route('/logout')
-# @login_required
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
