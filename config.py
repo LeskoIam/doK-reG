@@ -13,7 +13,7 @@ class DokRegAppConfig(object):
 
     UPLOAD_FOLDER = r"C:\Users\mpolensek\workspace\personal\doK-reG\upload_dir"
 
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(os.path.abspath(os.path.dirname(__file__)), "app.db")
+    SQLALCHEMY_DATABASE_URI = "postgresql://dokreg:dokreg@localhost:5432/dokreg"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     print(SQLALCHEMY_DATABASE_URI)
 
