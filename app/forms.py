@@ -3,7 +3,8 @@ from wtforms import (StringField,
                      PasswordField,
                      BooleanField,
                      SubmitField,
-                     FileField)
+                     FileField,
+                     SelectField)
 from wtforms.validators import (ValidationError,
                                 DataRequired,
                                 Email,
@@ -11,7 +12,8 @@ from wtforms.validators import (ValidationError,
 from flask_wtf.file import (FileRequired,
                             FileAllowed)
 
-from app.models import User
+from app.models import (User,
+                        Project)
 from config import ALLOWED_EXTENSIONS
 
 __author__ = 'mpolensek'
@@ -46,9 +48,22 @@ class RegistrationForm(FlaskForm):
             raise ValidationError("Please use a different email address.")
 
 
+def project_choices():
+    projects = Project.query.all()
+    projects_choices = []
+    for project in projects:
+        projects_choices.append((project.id, project.name))
+    return projects_choices
+
+pairs = project_choices()
+
+
 class UploadForm(FlaskForm):
+    project = SelectField("Project", choices=pairs, validators=None, coerce=int)
     title = StringField("Document title", validators=[DataRequired()])
     revision = StringField("Revision", validators=[DataRequired()], default=1)
     file = FileField("File", validators=[FileRequired(),
                                          FileAllowed(ALLOWED_EXTENSIONS, "File type not supported")])
     submit = SubmitField("Upload")
+
+
