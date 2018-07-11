@@ -24,10 +24,11 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(512))
     active = db.Column(db.Boolean, nullable=False, default=True)
     # Back-reference for foreign keys
-    document = db.relationship("Document", backref="user", lazy=True)
     edit_document = db.relationship("EditDocument", backref="user", lazy=True)
-    user_project = db.relationship("UserProject", backref="user", lazy=True)
+    user_document = db.relationship("UserDocument", backref="user", lazy=True)
     tags = db.relationship("Tags", backref="user", lazy=True)
+    project = db.relationship("Project", backref="user", lazy=True)
+    document = db.relationship("Document", backref="user", lazy=True)
 
     def __repr__(self):
         return "<User {}>".format(self.username)
@@ -54,9 +55,10 @@ class Project(db.Model):
     created_on = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
     updated_on = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     active = db.Column(db.Boolean, nullable=False, default=True)
+    # Foreign keys
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     # Back-reference for foreign keys
     document = db.relationship("Document", backref="project", lazy=True)
-    user_project = db.relationship("UserProject", backref="project", lazy=True)
 
 
 class Document(db.Model):
@@ -77,6 +79,7 @@ class Document(db.Model):
     # Back-reference for foreign keys
     edit_document = db.relationship("EditDocument", backref="document", lazy=True)
     tags = db.relationship("Tags", backref="document", lazy=True)
+    user_document = db.relationship("UserDocument", backref="document", lazy=True)
 
 
 class EditDocument(db.Model):
@@ -95,16 +98,16 @@ class EditDocument(db.Model):
     document_id = db.Column(db.Integer, db.ForeignKey("document.id"), nullable=False)
 
 
-class UserProject(db.Model):
+class UserDocument(db.Model):
 
-    __tablename__ = "user_project"
+    __tablename__ = "user_document"
 
     id = db.Column(db.Integer, primary_key=True)
 
     owner = db.Column(db.Boolean, nullable=False, default=False)
     # Foreign keys
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    project_id = db.Column(db.Integer, db.ForeignKey("project.id"), nullable=False)
+    document_id = db.Column(db.Integer, db.ForeignKey("document.id"), nullable=False)
 
 
 class Tags(db.Model):

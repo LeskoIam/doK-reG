@@ -18,7 +18,7 @@ from app.models import (User,
                         Document,
                         Project,
                         EditDocument,
-                        UserProject)
+                        UserDocument)
 
 from app import (app,
                  db)
@@ -37,7 +37,9 @@ __author__ = 'mpolensek'
 @app.route("/")
 @app.route("/index", methods=["GET"])
 def index():
-    documents = Document.query.filter_by(owner_id=current_user.get_id(), active=True).join(EditDocument).all()
+    documents = UserDocument.query.filter_by(user_id=current_user.get_id())\
+        .join(Document, Document.id == UserDocument.document_id).filter_by(active=True).order_by(Document.created_on.desc()).all()
+
     return render_template("index.html", documents=documents)
 
 
@@ -69,6 +71,11 @@ def new_file_upload():
             db.session.add(doc)
             db.session.flush()
 
+            user_document = UserDocument(owner=True,
+                                         user_id=current_user.get_id(),
+                                         document_id=doc.id)
+            db.session.add(user_document)
+
             edit_doc = EditDocument(user_id=current_user.get_id(),
                                     document_id=doc.id,
                                     under_edit=True,
@@ -89,7 +96,7 @@ def new_file_upload():
             doc_u.file_path = file_path
             db.session.add(doc_u)
             # Document is not under edit any more (all uploaded)
-            edit_doc_u = Document.query.filter_by(id=edit_doc.id).first()
+            edit_doc_u = EditDocument.query.filter_by(id=edit_doc.id).first()
             edit_doc_u.under_edit = False
             db.session.add(edit_doc_u)
 
@@ -105,14 +112,14 @@ def add_project():
     if request.method == "POST":
         if add_project_form.validate_on_submit():
             name = add_project_form.name.data
-            project = Project(name=name, active=True)
+            project = Project(name=name, owner_id=current_user.get_id(), active=True)
             db.session.add(project)
-            db.session.flush()
-
-            user_project = UserProject(owner=True,
-                                       user_id=current_user.get_id(),
-                                       project_id=project.id)
-            db.session.add(user_project)
+            # db.session.flush()
+            #
+            # user_project = UserDocument(owner=True,
+            #                             user_id=current_user.get_id(),
+            #                             document_id=project.id)
+            # db.session.add(user_project)
             db.session.commit()
             return redirect(url_for("add_project"))
     return render_template("add_project.html", form=add_project_form)
