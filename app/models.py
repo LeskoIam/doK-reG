@@ -24,7 +24,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(512))
     active = db.Column(db.Boolean, nullable=False, default=True)
     # Back-reference for foreign keys
-    edit_document = db.relationship("EditDocument", backref="user", lazy=True)
+    file = db.relationship("File", backref="user", lazy=True)
     user_document = db.relationship("UserDocument", backref="user", lazy=True)
     tags = db.relationship("Tags", backref="user", lazy=True)
     project = db.relationship("Project", backref="user", lazy=True)
@@ -68,34 +68,35 @@ class Document(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     title = db.Column(db.String, nullable=False)
-    original_file_name = db.Column(db.String, nullable=False)
-    internal_file_name = db.Column(db.String, nullable=False)
-    file_path = db.Column(db.String, nullable=False)
     created_on = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
+    updated_on = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     active = db.Column(db.Boolean, nullable=False, default=True)
+    active_revision = db.Column(db.Integer, nullable=False)
+    under_edit = db.Column(db.Boolean, nullable=False, default=False)
     # Foreign keys
     project_id = db.Column(db.Integer, db.ForeignKey("project.id"), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     # Back-reference for foreign keys
-    edit_document = db.relationship("EditDocument", backref="document", lazy=True)
+    file = db.relationship("File", backref="document", lazy=True)
     tags = db.relationship("Tags", backref="document", lazy=True)
     user_document = db.relationship("UserDocument", backref="document", lazy=True)
 
 
-class EditDocument(db.Model):
+class File(db.Model):
 
-    __tablename__ = "edit_document"
+    __tablename__ = "file"
 
     id = db.Column(db.Integer, primary_key=True)
 
-    under_edit = db.Column(db.Boolean, nullable=False, default=False)
-    from_revision = db.Column(db.Integer)
-    to_revision = db.Column(db.Integer, nullable=False)
-    comment = db.Column(db.String(1024), nullable=False)
+    original_file_name = db.Column(db.String, nullable=False)
+    internal_file_name = db.Column(db.String, nullable=False)
+    file_path = db.Column(db.String, nullable=False)
     created_on = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
+    revision = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.String(1024), nullable=False)
     # Foreign keys
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     document_id = db.Column(db.Integer, db.ForeignKey("document.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
 
 class UserDocument(db.Model):
@@ -104,7 +105,6 @@ class UserDocument(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    owner = db.Column(db.Boolean, nullable=False, default=False)
     # Foreign keys
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     document_id = db.Column(db.Integer, db.ForeignKey("document.id"), nullable=False)
@@ -123,7 +123,7 @@ class Tags(db.Model):
 
 
 # Create database tables
-go = 2
+go = 1
 if go == 1:
     db.create_all()
     print("create all")

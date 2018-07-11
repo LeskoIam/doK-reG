@@ -17,7 +17,7 @@ from flask_login import (current_user,
 from app.models import (User,
                         Document,
                         Project,
-                        EditDocument,
+                        File,
                         UserDocument)
 
 from app import (app,
@@ -38,7 +38,7 @@ __author__ = 'mpolensek'
 @app.route("/index", methods=["GET"])
 def index():
     documents = UserDocument.query.filter_by(user_id=current_user.get_id())\
-        .join(Document, Document.id == UserDocument.document_id).filter_by(active=True).order_by(Document.created_on.desc()).all()
+        .join(Document, Document.id == UserDocument.document_id).filter_by(active=True, under_edit=False).order_by(Document.created_on.desc()).all()
 
     return render_template("index.html", documents=documents)
 
@@ -46,7 +46,7 @@ def index():
 @app.route("/document/<int:document_id>")
 def document_details(document_id):
     document = Document.query.filter_by(id=document_id).join(Project).first()
-    last_edits = EditDocument.query.filter_by(document_id=document_id).order_by(EditDocument.created_on.desc()).all()
+    last_edits = File.query.filter_by(document_id=document_id).order_by(File.created_on.desc()).all()
     return render_template("document_details.html", document=document, last_edits=last_edits)
 
 
@@ -62,42 +62,39 @@ def new_file_upload():
             fname, fext = os.path.splitext(filename)
             internal_filename = "{name}_{rev}{ext}".format(name=title2filename(upload_form.title.data), rev=upload_form.revision.data, ext=fext)
             doc = Document(title=upload_form.title.data,
-                           original_file_name=filename,
-                           internal_file_name=internal_filename,
-                           file_path="dummy",
+                           active=True,
+                           under_edit=True,
+                           active_revision=upload_form.revision.data,
                            project_id=upload_form.project.data.id,
                            owner_id=current_user.get_id())
             db.session.add(doc)
             db.session.flush()
 
-            user_document = UserDocument(owner=True,
-                                         user_id=current_user.get_id(),
+            user_document = UserDocument(user_id=current_user.get_id(),
                                          document_id=doc.id)
             db.session.add(user_document)
-
-            edit_doc = EditDocument(user_id=current_user.get_id(),
-                                    document_id=doc.id,
-                                    under_edit=True,
-                                    from_revision=None,
-                                    to_revision=1,
-                                    comment=upload_form.comment.data)
-            db.session.add(edit_doc)
-            db.session.flush()
 
             # Generate path to where file will be saved on server
             file_path = os.path.join(app.config["UPLOAD_FOLDER"],
                                      "project_{}".format(upload_form.project.data.id),
                                      "dokument_{}".format(doc.id))
-            os.makedirs(file_path)
-            file.save(os.path.join(file_path, internal_filename))
-            # Update with before generated file path
-            doc_u = Document.query.filter_by(id=doc.id).first()
-            doc_u.file_path = file_path
-            db.session.add(doc_u)
+
+            file_info = File(original_file_name=filename,
+                        internal_file_name=internal_filename,
+                        file_path=file_path,
+                        revision=upload_form.revision.data,
+                        comment=upload_form.comment.data,
+                        document_id=doc.id,
+                        user_id=current_user.get_id())
+            db.session.add(file_info)
+
             # Document is not under edit any more (all uploaded)
-            edit_doc_u = EditDocument.query.filter_by(id=edit_doc.id).first()
+            edit_doc_u = Document.query.filter_by(id=doc.id).first()
             edit_doc_u.under_edit = False
             db.session.add(edit_doc_u)
+
+            os.makedirs(file_path)
+            file.save(os.path.join(file_path, internal_filename))
 
             db.session.commit()
             return redirect(url_for("index"))
@@ -113,15 +110,13 @@ def add_project():
             name = add_project_form.name.data
             project = Project(name=name, owner_id=current_user.get_id(), active=True)
             db.session.add(project)
-            # db.session.flush()
-            #
-            # user_project = UserDocument(owner=True,
-            #                             user_id=current_user.get_id(),
-            #                             document_id=project.id)
-            # db.session.add(user_project)
             db.session.commit()
             return redirect(url_for("add_project"))
-    return render_template("add_project.html", form=add_project_form)
+        return render_template("add_project.html", form=add_project_form)
+    elif request.method == "GET":
+        projects = Project.query.filter().order_by(Project.name.desc()).all()
+        print(projects)
+        return render_template("add_project.html", form=add_project_form, projects=projects)
 
 # @app.route("/download")
 # # @login_required

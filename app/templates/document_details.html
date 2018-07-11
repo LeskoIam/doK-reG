@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>Active revision:</b><br> {{ last_edits[0].to_revision }}
+                    <b>Active revision:</b><br> {{ document.active_revision }}
                 </div>
             </div>
             <div class="col-3">
@@ -18,7 +18,7 @@
             </div>
             <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>Last updated:</b><br> {{ last_edits[0].created_on }}
+                    <b>Last updated:</b><br> {{ document.updated_on }}
                 </div>
             </div>
             <div class="col-3">
@@ -31,7 +31,7 @@
         <div class="row">
             <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>File name:</b><br> {{ document.original_file_name }}
+                    <b>File name:</b><br> {{ last_edits[0].original_file_name }}
                 </div>
             </div>
             <div class="col-3">
@@ -53,7 +53,7 @@
             <div class="alert alert-primary" role="alert">
                 <div class="row">
                     <div class="col-3">
-                        {{ edit.to_revision }}
+                        {{ edit.revision }}
                     </div>
                     <div class="col-3">
                         {{ edit.user_id }}

@@ -7,14 +7,14 @@
         <form action="" method="post" novalidate enctype=multipart/form-data>
             {{ form.hidden_tag() }}
             <p>
-                {{ form.project.label }}
+                {{ form.project.label }}:
                 {{ form.project() }}
                 {% for error in form.project.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </p>
             <p>
-                {{ form.title.label }}
+                {{ form.title.label }}:
                 {{ form.title(size=64) }}
                 {% for error in form.title.errors %}
                     <span style="color: red;">[{{ error }}]</span>
@@ -22,7 +22,7 @@
             </p>
 
             <p>
-                {{ form.revision.label }}
+                {{ form.revision.label }}:
                 {{ form.revision(size=3, readonly=true) }}
                 {% for error in form.revision.errors %}
                     <span style="color: red;">[{{ error }}]</span>
@@ -37,7 +37,7 @@
             </p>
 
             <p>
-                {{ form.comment.label }} <br>
+                {{ form.comment.label }}: <br>
                 {{ form.comment(rows=5, cols=50) }}
                 {% for error in form.comment.errors %}
                     <span style="color: red;">[{{ error }}]</span>
