@@ -37,7 +37,7 @@ __author__ = 'mpolensek'
 @app.route("/")
 @app.route("/index", methods=["GET"])
 def index():
-    documents = Document.query.filter_by(owner_id=current_user.get_id(), active=True).all()
+    documents = Document.query.filter_by(owner_id=current_user.get_id(), active=True).join(EditDocument).all()
     return render_template("index.html", documents=documents)
 
 
