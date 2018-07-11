@@ -60,11 +60,10 @@ def new_file_upload():
             file = upload_form.file.data
             filename = secure_filename(file.filename)
             fname, fext = os.path.splitext(filename)
-            internal_filename = "{name}_{rev}{ext}".format(name=fname, rev=upload_form.revision.data, ext=fext)
-            print(internal_filename)
+            internal_filename = "{name}_{rev}{ext}".format(name=title2filename(upload_form.title.data), rev=upload_form.revision.data, ext=fext)
             doc = Document(title=upload_form.title.data,
                            original_file_name=filename,
-                           internal_file_name=filename,
+                           internal_file_name=internal_filename,
                            file_path="dummy",
                            project_id=upload_form.project.data.id,
                            owner_id=current_user.get_id())
@@ -90,7 +89,7 @@ def new_file_upload():
                                      "project_{}".format(upload_form.project.data.id),
                                      "dokument_{}".format(doc.id))
             os.makedirs(file_path)
-            file.save(os.path.join(file_path, filename))
+            file.save(os.path.join(file_path, internal_filename))
             # Update with before generated file path
             doc_u = Document.query.filter_by(id=doc.id).first()
             doc_u.file_path = file_path
@@ -179,3 +178,7 @@ def not_found(error):
 def unauthorized(error):
     app.logger.debug(error)
     return render_template("error_401.html"), 401
+
+
+def title2filename(title):
+    return title.replace(" ", "").lower()
