@@ -2,38 +2,66 @@
 
 {% block content %}
 
-    <h2>{{ document.title }}</h2>
+    <h2>{{ document.title|capitalize }}</h2>
 
-    <div>
+    <div class="alert alert-success" role="alert">
         <div class="row">
-            <div class="col-4">
+            <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>Project:</b> {{ document.project.name }}
+                    <b>Active revision:</b><br> {{ last_edits[0].to_revision }}
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>Last updated:</b> {{ last_edit.created_on }}
+                    <b>Project:</b><br> {{ document.project.name|capitalize }}
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>Created:</b> {{ document.created_on }}
+                    <b>Last updated:</b><br> {{ last_edits[0].created_on }}
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="alert alert-primary" role="alert">
+                    <b>Created:</b><br> {{ document.created_on }}
                 </div>
             </div>
         </div>
+
         <div class="row">
-            <div class="col-4">
+            <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>File name:</b> {{ document.original_file_name }}
+                    <b>File name:</b><br> {{ document.original_file_name }}
                 </div>
             </div>
-            <div class="col-8">
+            <div class="col-9">
                 <div class="alert alert-primary" role="alert">
-                    <b>Comment:</b> {{ last_edit.comment }}
+                    <b>Comment:</b><br> {{ last_edits[0].comment }}
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="alert alert-secondary" role="alert">
+        <h3>Document history</h3>
+        {% for edit in last_edits[1:] %}
+            <div class="alert alert-primary" role="alert">
+                <div class="row">
+                    <div class="col-3">
+                        {{ edit.to_revision }}
+                    </div>
+                    <div class="col-3">
+                        {{ edit.user_id }}
+                    </div>
+                    <div class="col-3">
+                        {{ edit.comment }}
+                    </div>
+                    <div class="col-3">
+                        --
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 
 {% endblock %}

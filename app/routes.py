@@ -46,8 +46,8 @@ def index():
 @app.route("/document/<int:document_id>")
 def document_details(document_id):
     document = Document.query.filter_by(id=document_id).join(Project).first()
-    last_edit = EditDocument.query.filter_by(document_id=document_id).order_by(EditDocument.created_on.desc()).first()
-    return render_template("document_details.html", document=document, last_edit=last_edit)
+    last_edits = EditDocument.query.filter_by(document_id=document_id).order_by(EditDocument.created_on.desc()).all()
+    return render_template("document_details.html", document=document, last_edits=last_edits)
 
 
 @app.route('/upload', methods=['GET', 'POST'])
