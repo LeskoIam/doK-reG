@@ -16,7 +16,9 @@ from flask_login import (current_user,
 
 from app.models import (User,
                         Document,
-                        Project)
+                        Project,
+                        EditDocument,
+                        UserProject)
 
 from app import (app,
                  db)
@@ -35,36 +37,63 @@ __author__ = 'mpolensek'
 @app.route("/")
 @app.route("/index", methods=["GET"])
 def index():
-    documents = Document.query.filter_by(owner_id=current_user.get_id()).order_by(Document.updated_on.desc()).all()
+    documents = Document.query.filter_by(owner_id=current_user.get_id(), active=True).all()
     return render_template("index.html", documents=documents)
 
 
 @app.route("/document/<int:document_id>")
 def document_details(document_id):
     document = Document.query.filter_by(id=document_id).join(Project).first()
-    print(dir(document.project))
-    print(document.project.name)
-    return render_template("document_details.html", document=document)
+    last_edit = EditDocument.query.filter_by(document_id=document_id).order_by(EditDocument.created_on.desc()).first()
+    return render_template("document_details.html", document=document, last_edit=last_edit)
 
 
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
-def upload_file():
+def new_file_upload():
     upload_form = UploadForm()
     if request.method == "POST":
         # check if upload form is valid
         if upload_form.validate_on_submit():
             file = upload_form.file.data
             filename = secure_filename(file.filename)
+            fname, fext = os.path.splitext(filename)
+            internal_filename = "{name}_{rev}{ext}".format(name=fname, rev=upload_form.revision.data, ext=fext)
+            print(internal_filename)
             doc = Document(title=upload_form.title.data,
-                           file_name=filename,
-                           file_path=app.config["UPLOAD_FOLDER"],
-                           revision=upload_form.revision.data,
+                           original_file_name=filename,
+                           internal_file_name=filename,
+                           file_path="dummy",
                            project_id=upload_form.project.data.id,
                            owner_id=current_user.get_id())
             db.session.add(doc)
+            db.session.flush()
+
+            edit_doc = EditDocument(user_id=current_user.get_id(),
+                                    document_id=doc.id,
+                                    under_edit=True,
+                                    from_revision=None,
+                                    to_revision=1,
+                                    comment="first_upload")
+            db.session.add(edit_doc)
+            db.session.flush()
+
+            # Generate path to where file will be saved on server
+            file_path = os.path.join(app.config["UPLOAD_FOLDER"],
+                                     "project_{}".format(upload_form.project.data.id),
+                                     "dokument_{}".format(doc.id))
+            os.makedirs(file_path)
+            file.save(os.path.join(file_path, filename))
+            # Update with before generated file path
+            doc_u = Document.query.filter_by(id=doc.id).first()
+            doc_u.file_path = file_path
+            db.session.add(doc_u)
+            # Document is not under edit any more (all uploaded)
+            edit_doc_u = Document.query.filter_by(id=edit_doc.id).first()
+            edit_doc_u.under_edit = False
+            db.session.add(edit_doc_u)
+
             db.session.commit()
-            file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
             return redirect(url_for("index"))
     return render_template("upload.html", form=upload_form)
 
@@ -76,8 +105,14 @@ def add_project():
     if request.method == "POST":
         if add_project_form.validate_on_submit():
             name = add_project_form.name.data
-            project = Project(name=name, owner_id=current_user.get_id())
+            project = Project(name=name, active=True)
             db.session.add(project)
+            db.session.flush()
+
+            user_project = UserProject(owner=True,
+                                       user_id=current_user.get_id(),
+                                       project_id=project.id)
+            db.session.add(user_project)
             db.session.commit()
             return redirect(url_for("add_project"))
     return render_template("add_project.html", form=add_project_form)

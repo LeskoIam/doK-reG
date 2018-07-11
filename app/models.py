@@ -18,12 +18,16 @@ class User(UserMixin, db.Model):
     __tablename__ = "user"
 
     id = db.Column(db.Integer, primary_key=True)
+
     username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
+    email = db.Column(db.String(128), index=True, unique=False)
+    password_hash = db.Column(db.String(512))
+    active = db.Column(db.Boolean, nullable=False, default=True)
     # Back-reference for foreign keys
     document = db.relationship("Document", backref="user", lazy=True)
-    project = db.relationship("Project", backref="user", lazy=True)
+    edit_document = db.relationship("EditDocument", backref="user", lazy=True)
+    user_project = db.relationship("UserProject", backref="user", lazy=True)
+    tags = db.relationship("Tags", backref="user", lazy=True)
 
     def __repr__(self):
         return "<User {}>".format(self.username)
@@ -45,14 +49,14 @@ class Project(db.Model):
     __tablename__ = "project"
 
     id = db.Column(db.Integer, primary_key=True)
+
     name = db.Column(db.String, unique=True)
     created_on = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
     updated_on = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now)
-    archived = db.Column(db.Boolean, nullable=False, default=False)
-    # Foreign keys
-    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    active = db.Column(db.Boolean, nullable=False, default=True)
     # Back-reference for foreign keys
     document = db.relationship("Document", backref="project", lazy=True)
+    user_project = db.relationship("UserProject", backref="project", lazy=True)
 
 
 class Document(db.Model):
@@ -60,16 +64,59 @@ class Document(db.Model):
     __tablename__ = "document"
 
     id = db.Column(db.Integer, primary_key=True)
+
     title = db.Column(db.String, nullable=False)
-    file_name = db.Column(db.String, nullable=False)
+    original_file_name = db.Column(db.String, nullable=False)
+    internal_file_name = db.Column(db.String, nullable=False)
     file_path = db.Column(db.String, nullable=False)
-    revision = db.Column(db.Integer, nullable=False)
     created_on = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
-    updated_on = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now)
-    archived = db.Column(db.Boolean, nullable=False, default=False)
+    active = db.Column(db.Boolean, nullable=False, default=True)
     # Foreign keys
     project_id = db.Column(db.Integer, db.ForeignKey("project.id"), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    # Back-reference for foreign keys
+    edit_document = db.relationship("EditDocument", backref="document", lazy=True)
+    tags = db.relationship("Tags", backref="document", lazy=True)
+
+
+class EditDocument(db.Model):
+
+    __tablename__ = "edit_document"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    under_edit = db.Column(db.Boolean, nullable=False, default=False)
+    from_revision = db.Column(db.Integer)
+    to_revision = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.String(1024), nullable=False)
+    created_on = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
+    # Foreign keys
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    document_id = db.Column(db.Integer, db.ForeignKey("document.id"), nullable=False)
+
+
+class UserProject(db.Model):
+
+    __tablename__ = "user_project"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    owner = db.Column(db.Boolean, nullable=False, default=False)
+    # Foreign keys
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey("project.id"), nullable=False)
+
+
+class Tags(db.Model):
+
+    __tablename__ = "tags"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    # Foreign keys
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    document_id = db.Column(db.Integer, db.ForeignKey("document.id"), nullable=False)
+
 
 
 # Create database tables
