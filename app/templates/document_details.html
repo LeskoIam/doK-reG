@@ -34,7 +34,12 @@
                     <b>File name:</b><br> {{ document.original_file_name }}
                 </div>
             </div>
-            <div class="col-9">
+            <div class="col-3">
+                <div class="alert alert-primary" role="alert">
+                    <b>Document owner:</b><br> {{ document.user.username }}
+                </div>
+            </div>
+            <div class="col-6">
                 <div class="alert alert-primary" role="alert">
                     <b>Comment:</b><br> {{ last_edits[0].comment }}
                 </div>
