@@ -3,7 +3,8 @@ from wtforms import (StringField,
                      PasswordField,
                      BooleanField,
                      SubmitField,
-                     FileField)
+                     FileField,
+                     TextAreaField)
 
 from wtforms.validators import (ValidationError,
                                 DataRequired,
@@ -62,6 +63,7 @@ class UploadForm(FlaskForm):
     revision = StringField("Revision", validators=[DataRequired()], default=1)
     file = FileField("File", validators=[FileRequired(),
                                          FileAllowed(ALLOWED_EXTENSIONS, "File type not supported")])
+    comment = TextAreaField("Comment", validators=[DataRequired()])
     submit = SubmitField("Upload")
 
 

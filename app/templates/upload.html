@@ -36,6 +36,14 @@
                 {% endfor %}
             </p>
 
+            <p>
+                {{ form.comment.label }} <br>
+                {{ form.comment(rows=5, cols=50) }}
+                {% for error in form.comment.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+
             <p>{{ form.submit() }}</p>
 {#            <input type=file name=file>#}
 {#            <input type=submit value=Upload>#}

@@ -74,7 +74,7 @@ def new_file_upload():
                                     under_edit=True,
                                     from_revision=None,
                                     to_revision=1,
-                                    comment="first_upload")
+                                    comment=upload_form.comment.data)
             db.session.add(edit_doc)
             db.session.flush()
 
