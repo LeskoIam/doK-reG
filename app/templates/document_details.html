@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <h2>{{ document.title|capitalize }}</h2>
+    <h2>{{ document.project.name|capitalize }} - {{ document.title|capitalize }}</h2>
 
     <div class="alert alert-success" role="alert">
         <div class="row">
@@ -13,9 +13,22 @@
             </div>
             <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>Project:</b><br> {{ document.project.name|capitalize }}
+                    <b>Document owner:</b><br> {{ document.user.username }}
                 </div>
             </div>
+            <div class="col-3">
+                <div class="alert alert-primary" role="alert">
+                    <b>Last updated by:</b><br> {{ last_edits[0].user.username }}
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="alert alert-primary" role="alert">
+                    <b>File name:</b><br> {{ last_edits[0].original_file_name }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-3">
                 <div class="alert alert-primary" role="alert">
                     <b>Last updated:</b><br> {{ document.updated_on }}
@@ -26,53 +39,42 @@
                     <b>Created:</b><br> {{ document.created_on }}
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-3">
-                <div class="alert alert-primary" role="alert">
-                    <b>File name:</b><br> {{ last_edits[0].original_file_name }}
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="alert alert-primary" role="alert">
-                    <b>Document owner:</b><br> {{ document.user.username }}
-                </div>
-            </div>
             <div class="col-6">
                 <div class="alert alert-primary" role="alert">
-                    <b>Comment:</b><br> {{ last_edits[0].comment }}
+                    <b>Comment:</b><br> {{ last_edits[0].comment|capitalize }}
                 </div>
             </div>
         </div>
 
 
         <div class="row">
-            <div class="col-6">
+            <div class="col-4">
                 <div class="alert alert-primary" role="alert">
                     <h4>Download active revision</h4>
-                    <form action="/download/{{ document.id }}/{{ document.active_revision }}" method="post" novalidate enctype=multipart/form-data>
-                        {{ download_form.hidden_tag() }}
-                        {{ download_form.submit() }}
-                    </form>
+                    <a href="/download/{{ document.id }}/{{ document.active_revision }}">
+                        <button type="button" class="btn btn-primary center">Download</button>
+                    </a>
                 </div>
+            </div>
+            <div class="col-2">
+
             </div>
             <div class="col-6">
                 <div class="alert alert-primary" role="alert">
                     <h4>Upload new revision</h4>
-                    <form action="/upload_new_rev/{{ document.id }}" method="post" novalidate enctype=multipart/form-data>
+                    <form action="" method="post" novalidate enctype=multipart/form-data>
                         {{ upload_form.hidden_tag() }}
                         {{ upload_form.file }}
                         {% for error in upload_form.file.errors %}
                             <span style="color: red;">[{{ error }}]</span>
                         {% endfor %}<br>
-
-                        {{ upload_form.comment.label }}<br>
-                        {{ upload_form.comment }}
-                        {% for error in upload_form.comment.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}<br>
-                        <br>
+                        <p>
+                            {{ upload_form.comment.label }}<br>
+                            {{ upload_form.comment }}
+                            {% for error in upload_form.comment.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}<br>
+                        </p>
                         {{ upload_form.submit() }}
                     </form>
                 </div>
@@ -83,20 +85,44 @@
 
     <div class="alert alert-secondary" role="alert">
         <h3>Document history</h3>
+        <div class="alert alert-info" role="alert">
+            <div class="row">
+                <div class="col-2">
+                    <b>Revision</b>
+                </div>
+                <div class="col-2">
+                    <b>Editor</b>
+                </div>
+                <div class="col-2">
+                    <b>Comment</b>
+                </div>
+                <div class="col-2">
+                    <b>Updated</b>
+                </div>
+                <div class="col-2">
+                    &nbsp;
+                </div>
+            </div>
+        </div>
         {% for edit in last_edits[1:] %}
             <div class="alert alert-primary" role="alert">
                 <div class="row">
-                    <div class="col-3">
+                    <div class="col-2">
                         {{ edit.revision }}
                     </div>
-                    <div class="col-3">
-                        {{ edit.user_id }}
+                    <div class="col-2">
+                        {{ edit.user.username }}
                     </div>
-                    <div class="col-3">
+                    <div class="col-2">
                         {{ edit.comment }}
                     </div>
-                    <div class="col-3">
-                        --
+                    <div class="col-2">
+                        {{ edit.created_on }}
+                    </div>
+                    <div class="col-2">
+                        <a href=href="/download/{{ document.id }}/{{ edit.revision }}"">
+                            <button type="button" class="btn btn-primary">Download</button>
+                        </a>
                     </div>
                 </div>
             </div>

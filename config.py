@@ -17,4 +17,7 @@ class DokRegAppConfig(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
-ALLOWED_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif", "zip", "rar"}
+ALLOWED_EXTENSIONS = {"txt", "pdf", "png",
+                      "jpg", "jpeg", "gif",
+                      "zip", "rar", "xlsx",
+                      "xls", "docx", "doc"}
