@@ -45,8 +45,13 @@
                 </div>
             </div>
         </div>
+        <form action="/download/{{ document.id }}/{{ document.active_revision }}" method="post" novalidate enctype=multipart/form-data>
+            {{ download_form.hidden_tag() }}
+            {{ download_form.submit() }}
+        </form>
     </div>
 
+    
     <div class="alert alert-secondary" role="alert">
         <h3>Document history</h3>
         {% for edit in last_edits[1:] %}

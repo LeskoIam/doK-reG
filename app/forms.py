@@ -70,3 +70,7 @@ class UploadForm(FlaskForm):
 class AddProjectForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     submit = SubmitField("Create")
+
+
+class DownloadForm(FlaskForm):
+    submit = SubmitField("Download")

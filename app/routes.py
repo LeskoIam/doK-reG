@@ -2,12 +2,14 @@ from flask import (render_template,
                    flash,
                    request,
                    redirect,
-                   url_for)
+                   url_for,
+                   send_file)
 
 from app.forms import (RegistrationForm,
                        LoginForm,
                        UploadForm,
-                       AddProjectForm)
+                       AddProjectForm,
+                       DownloadForm)
 
 from flask_login import (current_user,
                          login_user,
@@ -26,8 +28,9 @@ from app import (app,
 from werkzeug.utils import secure_filename
 import os
 
-
 __author__ = 'mpolensek'
+
+
 # Documentation is like sex.
 # When it's good, it's very good.
 # When it's bad, it's better than nothing.
@@ -37,17 +40,19 @@ __author__ = 'mpolensek'
 @app.route("/")
 @app.route("/index", methods=["GET"])
 def index():
-    documents = UserDocument.query.filter_by(user_id=current_user.get_id())\
+    documents = UserDocument.query.filter_by(user_id=current_user.get_id()) \
         .join(Document, Document.id == UserDocument.document_id).filter_by(active=True, under_edit=False).order_by(Document.created_on.desc()).all()
 
     return render_template("index.html", documents=documents)
 
 
-@app.route("/document/<int:document_id>")
+@app.route("/document/<int:document_id>", methods=['GET'] )
 def document_details(document_id):
+    download_form = DownloadForm()
     document = Document.query.filter_by(id=document_id).join(Project).first()
     last_edits = File.query.filter_by(document_id=document_id).order_by(File.created_on.desc()).all()
-    return render_template("document_details.html", document=document, last_edits=last_edits)
+    return render_template("document_details.html", document=document, last_edits=last_edits, download_form=download_form)
+
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -80,12 +85,12 @@ def new_file_upload():
                                      "dokument_{}".format(doc.id))
 
             file_info = File(original_file_name=filename,
-                        internal_file_name=internal_filename,
-                        file_path=file_path,
-                        revision=upload_form.revision.data,
-                        comment=upload_form.comment.data,
-                        document_id=doc.id,
-                        user_id=current_user.get_id())
+                             internal_file_name=internal_filename,
+                             file_path=file_path,
+                             revision=upload_form.revision.data,
+                             comment=upload_form.comment.data,
+                             document_id=doc.id,
+                             user_id=current_user.get_id())
             db.session.add(file_info)
 
             # Document is not under edit any more (all uploaded)
@@ -118,10 +123,12 @@ def add_project():
         print(projects)
         return render_template("add_project.html", form=add_project_form, projects=projects)
 
-# @app.route("/download")
-# # @login_required
-# def download():
-#     return send_file(r"C:\Users\mpolensek\workspace\personal\dokreg_tryes\static\img\404_page.jpg", as_attachment=True)
+
+@app.route("/download/<int:document_id>/<int:revision>", methods=["POST"])
+@login_required
+def download(document_id, revision):
+    fd = File.query.filter(File.document_id == document_id, File.revision == revision).first()
+    return send_file(os.path.join(fd.file_path, fd.internal_file_name), as_attachment=True)
 
 
 @app.route("/login", methods=["GET", "POST"])
