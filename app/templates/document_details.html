@@ -58,18 +58,24 @@
                 </div>
             </div>
             <div class="col-6">
-                    <div class="alert alert-primary" role="alert">
-                        <h4>Upload new revision</h4>
-                        <form action="/upload_new_rev/{{ document.id }}" method="post" novalidate enctype=multipart/form-data>
-                            {{ upload_form.hidden_tag() }}
-                            {{ upload_form.file }}<br>
+                <div class="alert alert-primary" role="alert">
+                    <h4>Upload new revision</h4>
+                    <form action="/upload_new_rev/{{ document.id }}" method="post" novalidate enctype=multipart/form-data>
+                        {{ upload_form.hidden_tag() }}
+                        {{ upload_form.file }}
+                        {% for error in upload_form.file.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}<br>
 
-                            {{ upload_form.comment.label }}<br>
-                            {{ upload_form.comment }}
-                            <br>
-                            {{ upload_form.submit() }}
-                        </form>
-                    </div>
+                        {{ upload_form.comment.label }}<br>
+                        {{ upload_form.comment }}
+                        {% for error in upload_form.comment.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}<br>
+                        <br>
+                        {{ upload_form.submit() }}
+                    </form>
+                </div>
             </div>
         </div>
     </div>
