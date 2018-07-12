@@ -123,7 +123,7 @@ class Tags(db.Model):
 
 
 # Create database tables
-go = 1
+go = 2
 if go == 1:
     db.create_all()
     print("create all")

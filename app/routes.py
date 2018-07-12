@@ -155,7 +155,6 @@ def add_project():
         return render_template("add_project.html", form=add_project_form)
     elif request.method == "GET":
         projects = Project.query.filter().order_by(Project.name.desc()).all()
-        print(projects)
         return render_template("add_project.html", form=add_project_form, projects=projects)
 
 
