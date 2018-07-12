@@ -74,3 +74,10 @@ class AddProjectForm(FlaskForm):
 
 class DownloadForm(FlaskForm):
     submit = SubmitField("Download")
+
+
+class NewRevUploadForm(FlaskForm):
+    file = FileField("File", validators=[FileRequired(),
+                                         FileAllowed(ALLOWED_EXTENSIONS, "File type not supported")])
+    comment = TextAreaField("Comment", validators=[DataRequired()])
+    submit = SubmitField("Upload")

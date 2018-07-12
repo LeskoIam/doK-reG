@@ -9,7 +9,8 @@ from app.forms import (RegistrationForm,
                        LoginForm,
                        UploadForm,
                        AddProjectForm,
-                       DownloadForm)
+                       DownloadForm,
+                       NewRevUploadForm)
 
 from flask_login import (current_user,
                          login_user,
@@ -46,12 +47,46 @@ def index():
     return render_template("index.html", documents=documents)
 
 
-@app.route("/document/<int:document_id>", methods=['GET'] )
+@app.route("/document/<int:document_id>", methods=["GET"])
 def document_details(document_id):
     download_form = DownloadForm()
+    upload_form = NewRevUploadForm()
     document = Document.query.filter_by(id=document_id).join(Project).first()
     last_edits = File.query.filter_by(document_id=document_id).order_by(File.created_on.desc()).all()
-    return render_template("document_details.html", document=document, last_edits=last_edits, download_form=download_form)
+    return render_template("document_details.html", document=document, last_edits=last_edits, download_form=download_form, upload_form=upload_form)
+
+@app.route("/upload_new_rev/<int:document_id>", methods=['POST'])
+@login_required
+def new_file_rev_upload(document_id):
+    upload_form = NewRevUploadForm()
+    # check if upload form is valid
+    if upload_form.validate_on_submit():
+        file = upload_form.file.data
+
+        document = Document.query.filter_by(id=document_id).first()
+        fd = File.query.filter_by(document_id=document_id, revision=document.active_revision).first()
+        # Calculate new revision and generate new file name
+        new_rev = document.active_revision + 1
+        n = fd.internal_file_name.rsplit("_", 1)
+        ext = os.path.splitext(n[1])
+        new_file_name = "{name}_{rev}{ext}".format(name=n[0], rev=new_rev, ext=ext[1])
+
+        file_info = File(original_file_name=fd.original_file_name,
+                         internal_file_name=new_file_name,
+                         file_path=fd.file_path,
+                         revision=new_rev,
+                         comment=upload_form.comment.data,
+                         document_id=document_id,
+                         user_id=current_user.get_id())
+        db.session.add(file_info)
+        # Update document active revision
+        document.active_revision = new_rev
+        db.session.add(document)
+
+        file.save(os.path.join(fd.file_path, new_file_name))
+        db.session.commit()
+
+    return redirect(url_for("document_details", document_id=document_id))
 
 
 

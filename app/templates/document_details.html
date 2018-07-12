@@ -45,13 +45,36 @@
                 </div>
             </div>
         </div>
-        <form action="/download/{{ document.id }}/{{ document.active_revision }}" method="post" novalidate enctype=multipart/form-data>
-            {{ download_form.hidden_tag() }}
-            {{ download_form.submit() }}
-        </form>
+
+
+        <div class="row">
+            <div class="col-6">
+                <div class="alert alert-primary" role="alert">
+                    <h4>Download active revision</h4>
+                    <form action="/download/{{ document.id }}/{{ document.active_revision }}" method="post" novalidate enctype=multipart/form-data>
+                        {{ download_form.hidden_tag() }}
+                        {{ download_form.submit() }}
+                    </form>
+                </div>
+            </div>
+            <div class="col-6">
+                    <div class="alert alert-primary" role="alert">
+                        <h4>Upload new revision</h4>
+                        <form action="/upload_new_rev/{{ document.id }}" method="post" novalidate enctype=multipart/form-data>
+                            {{ upload_form.hidden_tag() }}
+                            {{ upload_form.file }}<br>
+
+                            {{ upload_form.comment.label }}<br>
+                            {{ upload_form.comment }}
+                            <br>
+                            {{ upload_form.submit() }}
+                        </form>
+                    </div>
+            </div>
+        </div>
     </div>
 
-    
+
     <div class="alert alert-secondary" role="alert">
         <h3>Document history</h3>
         {% for edit in last_edits[1:] %}
