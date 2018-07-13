@@ -19,7 +19,7 @@ from flask_login import (current_user,
 from app.models import (User,
                         Document,
                         Project,
-                        File,
+                        Revision,
                         UserDocument)
 
 from app import (app,
@@ -50,27 +50,27 @@ def index():
 def document_details(document_id):
     upload_form = NewRevUploadForm()
     document = Document.query.filter_by(id=document_id).join(Project).first()
-    last_edits = File.query.filter_by(document_id=document_id).order_by(File.created_on.desc()).all()
+    last_edits = Revision.query.filter_by(document_id=document_id).order_by(Revision.created_on.desc()).all()
     if request.method == "POST":
         if upload_form.validate_on_submit():
             file = upload_form.file.data
             filename = secure_filename(file.filename)
 
             document = Document.query.filter_by(id=document_id).first()
-            fd = File.query.filter_by(document_id=document_id, revision=document.active_revision).first()
+            fd = Revision.query.filter_by(document_id=document_id, revision=document.active_revision).first()
             # Calculate new revision and generate new file name
             new_rev = document.active_revision + 1
             n = fd.internal_file_name.rsplit("_", 1)
             fname, fext = os.path.splitext(filename)
             new_file_name = "{name}_{rev}{ext}".format(name=n[0], rev=new_rev, ext=fext)
 
-            file_info = File(original_file_name=filename,
-                             internal_file_name=new_file_name,
-                             file_path=fd.file_path,
-                             revision=new_rev,
-                             comment=upload_form.comment.data,
-                             document_id=document_id,
-                             user_id=current_user.get_id())
+            file_info = Revision(original_file_name=filename,
+                                 internal_file_name=new_file_name,
+                                 file_path=fd.file_path,
+                                 revision=new_rev,
+                                 comment=upload_form.comment.data,
+                                 document_id=document_id,
+                                 user_id=current_user.get_id())
             db.session.add(file_info)
             # Update document active revision
             document.active_revision = new_rev
@@ -111,13 +111,13 @@ def new_file_upload():
                                      "project_{}".format(upload_form.project.data.id),
                                      "dokument_{}".format(doc.id))
 
-            file_info = File(original_file_name=filename,
-                             internal_file_name=internal_filename,
-                             file_path=file_path,
-                             revision=upload_form.revision.data,
-                             comment=upload_form.comment.data,
-                             document_id=doc.id,
-                             user_id=current_user.get_id())
+            file_info = Revision(original_file_name=filename,
+                                 internal_file_name=internal_filename,
+                                 file_path=file_path,
+                                 revision=upload_form.revision.data,
+                                 comment=upload_form.comment.data,
+                                 document_id=doc.id,
+                                 user_id=current_user.get_id())
             db.session.add(file_info)
 
             # Document is not under edit any more (all uploaded)
@@ -153,7 +153,7 @@ def add_project():
 @app.route("/download/<int:document_id>/<int:revision>", methods=["GET"])
 @login_required
 def download(document_id, revision):
-    fd = File.query.filter(File.document_id == document_id, File.revision == revision).first()
+    fd = Revision.query.filter(Revision.document_id == document_id, Revision.revision == revision).first()
     return send_file(os.path.join(fd.file_path, fd.internal_file_name), as_attachment=True)
 
 

@@ -24,7 +24,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(512))
     active = db.Column(db.Boolean, nullable=False, default=True)
     # Back-reference for foreign keys
-    file = db.relationship("File", backref="user", lazy=True)
+    revision = db.relationship("Revision", backref="user", lazy=True)
     user_document = db.relationship("UserDocument", backref="user", lazy=True)
     tags = db.relationship("Tags", backref="user", lazy=True)
     project = db.relationship("Project", backref="user", lazy=True)
@@ -77,14 +77,14 @@ class Document(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey("project.id"), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     # Back-reference for foreign keys
-    file = db.relationship("File", backref="document", lazy=True)
+    revision = db.relationship("Revision", backref="document", lazy=True)
     tags = db.relationship("Tags", backref="document", lazy=True)
     user_document = db.relationship("UserDocument", backref="document", lazy=True)
 
 
-class File(db.Model):
+class Revision(db.Model):
 
-    __tablename__ = "file"
+    __tablename__ = "revision"
 
     id = db.Column(db.Integer, primary_key=True)
 
