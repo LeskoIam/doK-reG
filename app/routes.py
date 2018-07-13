@@ -42,7 +42,8 @@ __author__ = 'mpolensek'
 @app.route("/index", methods=["GET"])
 def index():
     documents = UserDocument.query.filter_by(user_id=current_user.get_id()) \
-        .join(Document, Document.id == UserDocument.document_id).filter_by(active=True, under_edit=False).order_by(Document.created_on.desc()).all()
+        .join(Document, Document.id == UserDocument.document_id) \
+        .filter_by(active=True, under_edit=False).order_by(Document.created_on.desc()).all()
     return render_template("index.html", documents=documents)
 
 
@@ -92,7 +93,9 @@ def new_file_upload():
             file = upload_form.file.data
             filename = secure_filename(file.filename)
             fname, fext = os.path.splitext(filename)
-            internal_filename = "{name}_{rev}{ext}".format(name=title2filename(upload_form.title.data), rev=upload_form.revision.data, ext=fext)
+            internal_filename = "{name}_{rev}{ext}".format(name=title2filename(upload_form.title.data),
+                                                           rev=upload_form.revision.data,
+                                                           ext=fext)
             doc = Document(title=upload_form.title.data,
                            active=True,
                            under_edit=True,
