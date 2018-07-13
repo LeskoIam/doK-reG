@@ -9,7 +9,6 @@ from app.forms import (RegistrationForm,
                        LoginForm,
                        UploadForm,
                        AddProjectForm,
-                       DownloadForm,
                        NewRevUploadForm)
 
 from flask_login import (current_user,
@@ -26,6 +25,7 @@ from app.models import (User,
 from app import (app,
                  db)
 
+from app.common.db_common import execute_query
 from werkzeug.utils import secure_filename
 import os
 
@@ -43,7 +43,6 @@ __author__ = 'mpolensek'
 def index():
     documents = UserDocument.query.filter_by(user_id=current_user.get_id()) \
         .join(Document, Document.id == UserDocument.document_id).filter_by(active=True, under_edit=False).order_by(Document.created_on.desc()).all()
-
     return render_template("index.html", documents=documents)
 
 
