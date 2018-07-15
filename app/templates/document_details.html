@@ -85,47 +85,63 @@
 
     <div class="alert alert-secondary" role="alert">
         <h3>Document history</h3>
-        <div class="alert alert-info" role="alert">
-            <div class="row">
-                <div class="col-2">
-                    <b>Revision</b>
-                </div>
-                <div class="col-2">
-                    <b>Editor</b>
-                </div>
-                <div class="col-2">
-                    <b>Comment</b>
-                </div>
-                <div class="col-2">
-                    <b>Updated</b>
-                </div>
-                <div class="col-2">
-                    &nbsp;
-                </div>
-            </div>
-        </div>
         {% for edit in last_edits[1:] %}
-            <div class="alert alert-primary" role="alert">
-                <div class="row">
-                    <div class="col-2">
-                        {{ edit.revision }}
-                    </div>
-                    <div class="col-2">
-                        {{ edit.user.username }}
-                    </div>
-                    <div class="col-2">
-                        {{ edit.comment }}
-                    </div>
-                    <div class="col-2">
-                        {{ edit.created_on }}
-                    </div>
-                    <div class="col-2">
-                        <a href=href="/download/{{ document.id }}/{{ edit.revision }}"">
-                            <button type="button" class="btn btn-primary">Download</button>
-                        </a>
+{#            <div class="alert alert-primary" role="alert">#}
+{#                <div class="row">#}
+{#                    <div class="col-2">#}
+{#                        {{ edit.revision }}#}
+{#                    </div>#}
+{#                    <div class="col-2">#}
+{#                        {{ edit.user.username }}#}
+{#                    </div>#}
+{#                    <div class="col-2">#}
+{#                        {{ edit.comment }}#}
+{#                    </div>#}
+{#                    <div class="col-2">#}
+{#                        {{ edit.created_on }}#}
+{#                    </div>#}
+{#                    <div class="col-2">#}
+{#                        <a href=href="/download/{{ document.id }}/{{ edit.revision }}"">#}
+{#                            <button type="button" class="btn btn-primary">Download</button>#}
+{#                        </a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+            <div class="accordion">
+            <div class="card">
+                <div class="card-header" >
+                    <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseRev{{ loop.index }}" aria-expanded="false">
+                      Revision: {{ edit.revision }}
+                    </button>
+			        </h5>
+                </div>
+                <div id="collapseRev{{ loop.index }}" class="collapse">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-2">
+                                {{ edit.revision }}
+                            </div>
+                            <div class="col-2">
+                                {{ edit.user.username }}
+                            </div>
+                            <div class="col-2">
+                                {{ edit.comment }}
+                            </div>
+                            <div class="col-2">
+                                {{ edit.created_on }}
+                            </div>
+                            <div class="col-2">
+                                <a href=href="/download/{{ document.id }}/{{ edit.revision }}"">
+                                    <button type="button" class="btn btn-primary">Download</button>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+            </div>
+
         {% endfor %}
     </div>
 
