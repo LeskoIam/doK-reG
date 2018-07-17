@@ -1,0 +1,49 @@
+
+class Queries(object):
+
+    DOCUMENT_DETAILS_HISTORY = """
+    -- Get complete document history
+    SELECT
+      t2.revision AS revision,
+      u.username AS document_owner,
+      t2.username AS last_updated_by,
+      t2.original_file_name,
+      t2.last_updated,
+      t2.created,
+      t2.comment,
+      t2.project_name
+    FROM
+      (SELECT
+        t1.user_id,
+        u.username,
+        t1.owner_id,
+        t1.revision,
+        t1.original_file_name,
+        t1.last_updated,
+        t1.created,
+        t1.comment,
+        t1.project_name
+      FROM
+        (SELECT
+          r.revision,
+          d.owner_id,
+          r.user_id,
+          r.original_file_name,
+          r.created_on AS last_updated,
+          d.created_on AS created,
+          r.comment AS comment,
+          p.name AS project_name
+        FROM
+          document d
+        JOIN revision r ON r.document_id = d.id
+        JOIN project p ON d.project_id = p.id
+        WHERE
+          d.active = true AND
+          p.active = true AND
+          d.id = {document_id}) t1 -- Here is it - document id
+      JOIN "user" u ON t1.user_id = u.id) t2
+    JOIN "user" u ON t2.owner_id = u.id
+    ORDER BY revision DESC;"""
+
+    def document_history(self, document_id):
+        return self.DOCUMENT_DETAILS_HISTORY.format(document_id=document_id)

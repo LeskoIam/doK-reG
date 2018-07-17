@@ -18,3 +18,20 @@ def execute_query(query: str, as_list=False):
     if as_list:
         result = list(result)
     return result
+
+
+if __name__ == '__main__':
+    from app.common.db_queries import Queries
+    queries = Queries()
+    sql_str = queries.document_history(document_id=5)
+
+    res = execute_query(sql_str)
+    print(res)
+    print(dir(res))
+    print()
+
+    for row in res:
+        print(row)
+        # print(dir(row))
+        # print(row.keys())
+        print(row.revision)

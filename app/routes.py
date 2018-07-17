@@ -25,7 +25,7 @@ from app.models import (User,
 from app import (app,
                  db)
 
-from app.common.db_common import execute_query
+from app.common.databse_helpers import execute_query
 from werkzeug.utils import secure_filename
 import os
 
