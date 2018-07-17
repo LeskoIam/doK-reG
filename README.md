@@ -1,7 +1,7 @@
 # doK-reG
 save your documents
 
-This tries to be a clone of [docreg](https://github.com/scott-abernethy/docreg-web) with not so many bells and whistles.
+Tries to be a clone of [docreg](https://github.com/scott-abernethy/docreg-web) with not so many bells and whistles.
 
 ## Installation
 ### General requirements
@@ -15,8 +15,8 @@ This tries to be a clone of [docreg](https://github.com/scott-abernethy/docreg-w
 4. set your download directory ("config.py" -> UPLOAD_FOLDER)
 5. create database and necessary tables (diagram [here](https://app.sqldbm.com/SQLServer/Share/d3OpnSOmAtZQWMHDUGgfREGFrngIE8md_DYjF4jNYw0))
    * a)
-       * crete new database (using pgAdmin for example)
        * create new user  and set a password for it
+       * crete new database (using pgAdmin for example) and set the owner to previously created user
        * change database, password and user in "config.py"
    * b) 
        * open "app/models.py" and set "go" variable to 1.
