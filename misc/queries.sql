@@ -1,5 +1,6 @@
 -- Get complete document history
 SELECT
+  t2.document_title,
   t2.revision AS revision,
   u.username AS document_owner,
   t2.username AS last_updated_by,
@@ -7,12 +8,14 @@ SELECT
   t2.last_updated,
   t2.created,
   t2.comment,
-  t2.project_name
+  t2.project_name,
+  2 AS document_id
 FROM
   (SELECT
     t1.user_id,
     u.username,
     t1.owner_id,
+    t1.document_title,
     t1.revision,
     t1.original_file_name,
     t1.last_updated,
@@ -23,6 +26,7 @@ FROM
     (SELECT
       r.revision,
       d.owner_id,
+      d.title AS document_title,
       r.user_id,
       r.original_file_name,
       r.created_on AS last_updated,

@@ -26,6 +26,7 @@ from app import (app,
                  db)
 
 from app.common.databse_helpers import execute_query
+from app.common.db_queries import Queries
 from werkzeug.utils import secure_filename
 import os
 
@@ -50,8 +51,8 @@ def index():
 @app.route("/document/<int:document_id>", methods=["GET", "POST"])
 def document_details(document_id):
     upload_form = NewRevUploadForm()
-    document = Document.query.filter_by(id=document_id).join(Project).first()
-    last_edits = Revision.query.filter_by(document_id=document_id).order_by(Revision.created_on.desc()).all()
+    queries = Queries()
+    document_data = execute_query(queries.document_history(document_id))
     if request.method == "POST":
         if upload_form.validate_on_submit():
             file = upload_form.file.data
@@ -80,7 +81,7 @@ def document_details(document_id):
             file.save(os.path.join(fd.file_path, new_file_name))
             db.session.commit()
             return redirect(url_for("document_details", document_id=document_id))
-    return render_template("document_details.html", document=document, last_edits=last_edits, upload_form=upload_form)
+    return render_template("document_details.html", document_data=document_data, upload_form=upload_form)
 
 
 @app.route('/upload', methods=['GET', 'POST'])

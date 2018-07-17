@@ -2,28 +2,28 @@
 
 {% block content %}
 
-    <h2>{{ document.project.name|capitalize }} - {{ document.title|capitalize }}</h2>
+    <h2>{{ document_data[0].project_name|capitalize }} - {{ document_data[0].document_title|capitalize }}</h2>
 
     <div class="alert alert-success" role="alert">
         <div class="row">
             <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>Active revision:</b><br> {{ document.active_revision }}
+                    <b>Active revision:</b><br> {{ document_data[0].revision }}
                 </div>
             </div>
             <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>Document owner:</b><br> {{ document.user.username }}
+                    <b>Document owner:</b><br> {{ document_data[0].document_owner }}
                 </div>
             </div>
             <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>Last updated by:</b><br> {{ last_edits[0].user.username }}
+                    <b>Last updated by:</b><br> {{ document_data[0].last_updated_by }}
                 </div>
             </div>
             <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>File name:</b><br> {{ last_edits[0].original_file_name }}
+                    <b>File name:</b><br> {{ document_data[0].original_file_name }}
                 </div>
             </div>
         </div>
@@ -31,17 +31,17 @@
         <div class="row">
             <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>Last updated:</b><br> {{ document.updated_on }}
+                    <b>Last updated:</b><br> {{ document_data[0].last_updated }}
                 </div>
             </div>
             <div class="col-3">
                 <div class="alert alert-primary" role="alert">
-                    <b>Created:</b><br> {{ document.created_on }}
+                    <b>Created:</b><br> {{ document_data[0].created }}
                 </div>
             </div>
             <div class="col-6">
                 <div class="alert alert-primary" role="alert">
-                    <b>Comment:</b><br> {{ last_edits[0].comment|capitalize }}
+                    <b>Comment:</b><br> {{ document_data[0].comment|capitalize }}
                 </div>
             </div>
         </div>
@@ -51,7 +51,7 @@
             <div class="col-4">
                 <div class="alert alert-primary" role="alert">
                     <h4>Download active revision</h4>
-                    <a href="/download/{{ document.id }}/{{ document.active_revision }}">
+                    <a href="/download/{{ document_data[0].document_id }}/{{ document_data[0].revision }}">
                         <button type="button" class="btn btn-primary center">Download</button>
                     </a>
                 </div>
@@ -85,34 +85,13 @@
 
     <div class="alert alert-secondary" role="alert">
         <h3>Document history</h3>
-        {% for edit in last_edits[1:] %}
-{#            <div class="alert alert-primary" role="alert">#}
-{#                <div class="row">#}
-{#                    <div class="col-2">#}
-{#                        {{ edit.revision }}#}
-{#                    </div>#}
-{#                    <div class="col-2">#}
-{#                        {{ edit.user.username }}#}
-{#                    </div>#}
-{#                    <div class="col-2">#}
-{#                        {{ edit.comment }}#}
-{#                    </div>#}
-{#                    <div class="col-2">#}
-{#                        {{ edit.created_on }}#}
-{#                    </div>#}
-{#                    <div class="col-2">#}
-{#                        <a href=href="/download/{{ document.id }}/{{ edit.revision }}"">#}
-{#                            <button type="button" class="btn btn-primary">Download</button>#}
-{#                        </a>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
+        {% for revision in document_data[1:] %}
             <div class="accordion">
             <div class="card">
                 <div class="card-header" >
                     <h5 class="mb-0">
                     <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseRev{{ loop.index }}" aria-expanded="false">
-                      Revision: {{ edit.revision }}
+                      Revision: {{ revision.revision }}
                     </button>
 			        </h5>
                 </div>
@@ -120,19 +99,19 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-2">
-                                {{ edit.revision }}
+                                {{ revision.revision }}
                             </div>
                             <div class="col-2">
-                                {{ edit.user.username }}
+                                {{ revision.last_updated_by }}
                             </div>
                             <div class="col-2">
-                                {{ edit.comment }}
+                                {{ revision.comment }}
                             </div>
                             <div class="col-2">
-                                {{ edit.created_on }}
+                                {{ revision.created }}
                             </div>
                             <div class="col-2">
-                                <a href=href="/download/{{ document.id }}/{{ edit.revision }}"">
+                                <a href="/download/{{ revision.document_id }}/{{ revision.revision }}">
                                     <button type="button" class="btn btn-primary">Download</button>
                                 </a>
                             </div>
