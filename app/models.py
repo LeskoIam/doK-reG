@@ -5,8 +5,9 @@ from app import (db,
 from flask_login import UserMixin
 import datetime
 
-
 __author__ = 'mpolensek'
+
+
 # Documentation is like sex.
 # When it's good, it's very good.
 # When it's bad, it's better than nothing.
@@ -14,7 +15,6 @@ __author__ = 'mpolensek'
 
 
 class User(UserMixin, db.Model):
-
     __tablename__ = "user"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -46,7 +46,6 @@ def load_user(user_id):
 
 
 class Project(db.Model):
-
     __tablename__ = "project"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -62,7 +61,6 @@ class Project(db.Model):
 
 
 class Document(db.Model):
-
     __tablename__ = "document"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -83,7 +81,6 @@ class Document(db.Model):
 
 
 class Revision(db.Model):
-
     __tablename__ = "revision"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -100,7 +97,6 @@ class Revision(db.Model):
 
 
 class UserDocument(db.Model):
-
     __tablename__ = "user_document"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -111,7 +107,6 @@ class UserDocument(db.Model):
 
 
 class Tags(db.Model):
-
     __tablename__ = "tags"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -119,7 +114,6 @@ class Tags(db.Model):
     # Foreign keys
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     document_id = db.Column(db.Integer, db.ForeignKey("document.id"), nullable=False)
-
 
 
 # Create database tables
