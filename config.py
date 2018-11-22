@@ -11,7 +11,7 @@ class DokRegAppConfig(object):
 
     SECRET_KEY = "you-will-never-guess"
 
-    UPLOAD_FOLDER = r"C:\Users\mpolensek\workspace\personal\doK-reG\upload_dir"
+    UPLOAD_FOLDER = r"/home/pi/server/doK-reG/storage"
 
     db_user = "dokreg"
     db_password = "dokreg"

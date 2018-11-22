@@ -4,4 +4,7 @@ __author__ = 'mpolensek'
 # When it's bad, it's better than nothing.
 # When it lies to you, it may be a while before you realize something's wrong.
 
+import sys
+sys.path.append(".")
+
 from app import app

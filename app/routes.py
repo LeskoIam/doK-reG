@@ -3,7 +3,8 @@ from flask import (render_template,
                    request,
                    redirect,
                    url_for,
-                   send_file)
+                   send_file,
+                   abort)
 
 from app.forms import (RegistrationForm,
                        LoginForm,
@@ -52,7 +53,10 @@ def index():
 def document_details(document_id):
     upload_form = NewRevUploadForm()
     queries = Queries()
-    document_data = execute_query(queries.document_history(document_id))
+    document_data = execute_query(queries.document_history(document_id=document_id, owner_id=current_user.get_id()))
+    if len(document_data) == 0:
+        app.logger.debug("document_data: {} for user {}".format(document_data, current_user.get_id()))
+        abort(401)
     if request.method == "POST":
         if upload_form.validate_on_submit():
             file = upload_form.file.data

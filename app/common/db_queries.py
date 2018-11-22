@@ -44,10 +44,11 @@ class Queries(object):
         WHERE
           d.active = true AND
           p.active = true AND
+          d.owner_id = {owner_id} AND
           d.id = {document_id}) t1 -- Here is it - document id
       JOIN "user" u ON t1.user_id = u.id) t2
     JOIN "user" u ON t2.owner_id = u.id
 ORDER BY revision DESC;"""
 
-    def document_history(self, document_id):
-        return self.DOCUMENT_DETAILS_HISTORY.format(document_id=document_id)
+    def document_history(self, document_id, owner_id):
+        return self.DOCUMENT_DETAILS_HISTORY.format(document_id=document_id, owner_id=owner_id)
